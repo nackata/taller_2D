@@ -1,3 +1,5 @@
+#define STB_IMAGE_IMPLEMENTATION
+
 #include <iostream>
 #include <glad/glad.h>
 
@@ -5,20 +7,20 @@
 #include "GLFW/glfw3.h"
 #include <glm/glm.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include "lib/stb_image/stb_image.h"
-
 #include "shader.h"
 #include "context.h"
 #include "glfwcontext.h"
 #include "player.h"
+#include "texture.h"
+#include "rendersystem.h"
+#include "tile.h"
 
 const int width = 800;
 const int height = 600;
-const float screenRatio = static_cast<float>(width) / height;
+//const float screenRatio = static_cast<float>(width) / height;
 const std::string title = { "Taller_2d 0.0.1 " };
 
-const glm::mat4 projection = glm::ortho(-1.f * screenRatio, 1.f * screenRatio, -1.f, 1.f, -1.f, 1.f);
+//const glm::mat4 projection = glm::ortho(-1.f * screenRatio, 1.f * screenRatio, -1.f, 1.f, -1.f, 1.f);
 
 
 //void processInput(GLFWwindow *window)
@@ -100,7 +102,6 @@ int main()
         1, 2, 3
     };
 
-
     unsigned int VAO;
     glGenVertexArrays(1, &VAO);
     unsigned int VBO, EBO;
@@ -124,63 +125,69 @@ int main()
 
     auto mainShader = Shader("common/shaders/vertex_shader.glsl", "common/shaders/fragment_shader.glsl");
 
+    RenderSystem renderer(context, mainShader);
+    ComponentManager componentManager;
+
     mainShader.use();
 
-    unsigned int texture1;
+//    unsigned int texture1;
 
-    glGenTextures(1, &texture1);
-    glBindTexture(GL_TEXTURE_2D, texture1);
+//    glGenTextures(1, &texture1);
+//    glBindTexture(GL_TEXTURE_2D, texture1);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+//    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    int width, height, nrChannels;
-    stbi_set_flip_vertically_on_load(true);
-    unsigned char *data = stbi_load("common/texture/grass_floor.jpg", &width, &height, &nrChannels, 0);
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
+//    int width, height, nrChannels;
+//    stbi_set_flip_vertically_on_load(true);
+//    unsigned char *data = stbi_load("common/texture/grass_floor.jpg", &width, &height, &nrChannels, 0);
+//    if (data)
+//    {
+//        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+//        glGenerateMipmap(GL_TEXTURE_2D);
+//    }
+//    else
+//    {
+//        std::cout << "Failed to load texture" << std::endl;
+//    }
+//    stbi_image_free(data);
 
-    mainShader.setInt("tex", 0);
+    TextureManager texMan;
 
-    mainShader.setMat4("projection", projection);
+    auto tex = texMan.loadTexture("common/texture/grass_floor.jpg");
+    TileEntity tile(componentManager, tex);
+
+//    mainShader.setMat4("projection", projection);
+
+    std::cout << "kekas" << std::endl;
 
     while(!context->shouldClose())
     {
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+//        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+//        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.clear();
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texture1);
+//        glActiveTexture(GL_TEXTURE0);
+//        glBindTexture(GL_TEXTURE_2D, texture1);
+        texMan.bindTexture(tex);
+        renderer.drawSprites(componentManager);
 
-//        int rad = 3;
-//        for (int i = -rad - 1; i < rad + 1; ++i)
-//        {
-//            for (int j = -rad; j < rad ; ++j)
-//            {
-        mainShader.setVec2("tilePos", glm::vec2(0.f, 0.f));
-        glDrawElements(GL_TRIANGLES, static_cast<int>(sizeof(indexes)), GL_UNSIGNED_INT, nullptr);
-//            }
-//        }
+
+//        mainShader.setVec2("tilePos", glm::vec2(0.f, 0.f));
+//        glDrawElements(GL_TRIANGLES, static_cast<int>(sizeof(indexes)), GL_UNSIGNED_INT, nullptr);
 
 
         context->update();
 
-        mainShader.setVec3("camPos", player.camPos());
+//        mainShader.setVec3("camPos", player.camPos());
+        renderer.camera = player.camPos();
         context->processInput(player);
     }
 
-    glfwTerminate();
+//    glfwTerminate();
 
     return 0;
 }

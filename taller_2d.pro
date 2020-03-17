@@ -13,6 +13,8 @@ HEADERS += \
         include/renderable.h \
         include/rendersystem.h \
         include/shader.h \
+        include/spritecomponent.h \
+        include/texture.h \
         include/tile.h \
         lib/ecs/TypeCounter.h \
         lib/ecs/component.h \
@@ -33,6 +35,8 @@ SOURCES += \
         src/renderable.cpp \
         src/rendersystem.cpp \
         src/shader.cpp \
+        src/spritecomponent.cpp \
+        src/texture.cpp \
         src/tile.cpp
 
 

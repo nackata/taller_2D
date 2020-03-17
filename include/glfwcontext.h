@@ -12,19 +12,25 @@
 class GLFWContext : public Context
 {
     GLFWwindow * m_window = nullptr;
+    int m_width;
+    int m_height;
 
 public:
 
-    virtual bool initContext(int width, int height, const char * title);
-    virtual void processInput(Player & player);
-    virtual bool shouldClose();
-    virtual void swapBuffers();
+    virtual bool initContext(int width, int height, const char * title) override;
+    virtual void processInput(Player & player) override;
+    virtual bool shouldClose() override;
+    virtual void swapBuffers() override;
 
-    virtual void update();
+    virtual void update() override;
 
     GLFWContext();
 
-    virtual ~GLFWContext();
+    virtual ~GLFWContext() override;
+
+    virtual int width() const override { return m_width; }
+    virtual int height() const override { return m_height; }
+    virtual float screenRatio() const override { return static_cast<float>(m_width) / m_height; }
 };
 
 #endif // GLFWCONTEXT_H

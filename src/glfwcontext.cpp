@@ -2,6 +2,8 @@
 
 bool GLFWContext::initContext(int width, int height, const char *title)
 {
+    m_width = width;
+    m_height = height;
     if (m_window) return false;
 
     if(!glfwInit()) return false;
